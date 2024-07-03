@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: EurekaServer
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER:http://localhost:8888}

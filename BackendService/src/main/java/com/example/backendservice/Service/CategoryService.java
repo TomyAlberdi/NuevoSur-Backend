@@ -1,5 +1,6 @@
 package com.example.backendservice.Service;
 
+import com.example.backendservice.DTO.CategoryDTO;
 import com.example.backendservice.Entity.Category;
 import com.example.backendservice.Repository.CategoryRepository;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,12 @@ public class CategoryService {
     
     public Optional<Category> findByName(String name) {
         return categoryRepository.findByName(name);
+    }
+    
+    public Category add(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        category.setName(categoryDTO.getName());
+        return categoryRepository.save(category);
     }
     
 }

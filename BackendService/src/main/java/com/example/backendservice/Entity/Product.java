@@ -20,6 +20,22 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotNull
+    @ElementCollection
+    @CollectionTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "tags")
+    private List<String> tags;
+    
+    @NotNull
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "images")
+    private List<String> images;
+    
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    private Discount discount;
+    
     @NotBlank
     @Column(name = "name", nullable = false)
     private String name;
@@ -27,11 +43,6 @@ public class Product {
     @NotBlank
     @Column(name = "description", nullable = false)
     private String description;
-    
-    @NotNull
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
-    private List<Image> images;
     
     @NotNull
     @Column(name = "category_id", nullable = false)
@@ -68,12 +79,5 @@ public class Product {
     @NotNull
     @Column(name = "quality", nullable = false)
     private String quality;
-    
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
-    private List<Tag> tags;
-    
-    @Embedded
-    private Discount discount;
     
 }

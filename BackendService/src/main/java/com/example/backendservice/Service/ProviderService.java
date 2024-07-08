@@ -23,6 +23,10 @@ public class ProviderService {
         return providerRepository.findByName(name);
     }
     
+    public Optional<Provider> findById(Long id) {
+        return providerRepository.findById(id);
+    }
+    
     public Provider add(ProviderDTO providerDTO) {
         Provider provider = new Provider();
         provider.setName(providerDTO.getName());

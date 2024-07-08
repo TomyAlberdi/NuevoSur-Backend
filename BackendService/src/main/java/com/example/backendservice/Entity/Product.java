@@ -32,9 +32,11 @@ public class Product {
     @Column(name = "images")
     private List<String> images;
     
-    @ManyToOne
-    @JoinColumn(name = "discount_id")
-    private Discount discount;
+    @Column(name = "discount_percentage")
+    private Integer discount_percentage;
+    
+    @Column(name = "discount_new_price")
+    private Double discount_new_price;
     
     @NotBlank
     @Column(name = "name", nullable = false)

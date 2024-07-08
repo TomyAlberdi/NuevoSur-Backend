@@ -23,6 +23,10 @@ public class CategoryService {
         return categoryRepository.findByName(name);
     }
     
+    public Optional<Category> findById(Long id) {
+        return categoryRepository.findById(id);
+    }
+    
     public Category add(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setName(categoryDTO.getName());

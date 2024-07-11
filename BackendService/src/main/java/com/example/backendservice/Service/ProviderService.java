@@ -33,4 +33,8 @@ public class ProviderService {
         return providerRepository.save(provider);
     }
     
+    public void deleteById(Long id) {
+        providerRepository.deleteById(id);
+    }
+    
 }

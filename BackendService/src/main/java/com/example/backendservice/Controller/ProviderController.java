@@ -2,6 +2,7 @@ package com.example.backendservice.Controller;
 
 import com.example.backendservice.DTO.ProviderDTO;
 import com.example.backendservice.Entity.Provider;
+import com.example.backendservice.Service.ProductService;
 import com.example.backendservice.Service.ProviderService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,11 @@ import java.util.Optional;
 public class ProviderController {
     
     private final ProviderService providerService;
+    private final ProductService productService;
+    
+    public ResponseEntity<?> notFound(Long code) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Provider with ID " + code + " not found.");
+    }
     
     @GetMapping("/list")
     public List<Provider> list() {
@@ -44,6 +50,20 @@ public class ProviderController {
         }
         Provider provider = providerService.add(providerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Provider created");
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
+        Optional<Provider> search = providerService.findById(id);
+        if (search.isPresent()) {
+            Optional<List<Long>> listProducts = productService.getIdByProvider(id);
+            if (listProducts.isPresent() && listProducts.get().size() > 0) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Unable to delete Provider. Products with Provider ID " + id + " found ( IDs: " + listProducts.get() + " )");
+            }
+            providerService.deleteById(id);
+            return ResponseEntity.ok("Provider with ID " + id + " deleted.");
+        }
+        return notFound(id);
     }
     
 }

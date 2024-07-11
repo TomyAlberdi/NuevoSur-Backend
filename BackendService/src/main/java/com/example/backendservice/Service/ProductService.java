@@ -93,6 +93,14 @@ public class ProductService {
         return productRepository.findByCode(code);
     }
     
+    public Optional<List<Long>> getCodeByCategoryId(Long id) {
+        return productRepository.getCodeByCategoryId(id);
+    }
+    
+    public Optional<List<Long>> getCodeByProviderId(Long id) {
+        return productRepository.getCodeByProviderId(id);
+    }
+    
     public void deleteByCode(Long code) {
         productRepository.deleteByCode(code);
     }

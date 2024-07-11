@@ -12,20 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-
-    @Query("SELECT p FROM Product p WHERE p.code = ?1")
-    Optional<Product> findByCode(Long code);
     
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Product p WHERE p.code = ?1")
-    void deleteByCode(Long code);
+    @Query("SELECT p.id FROM Product p WHERE p.categoryId = ?1")
+    Optional<List<Long>> getIdByCategory(Long id);
     
-    @Query("SELECT p.code FROM Product p WHERE p.categoryId = ?1")
-    Optional<List<Long>> getCodeByCategoryId(Long id);
-    
-    @Query("SELECT p.code FROM Product p WHERE p.providerId = ?1")
-    Optional<List<Long>> getCodeByProviderId(Long id);
+    @Query("SELECT p.id FROM Product p WHERE p.providerId = ?1")
+    Optional<List<Long>> getIdByProvider(Long id);
     
     @Modifying
     @Transactional
@@ -42,10 +34,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "salesUnit = ?10, " +
             "price = ?11, " +
             "quality = ?12 " +
-            "WHERE code = ?13")
+            "WHERE id = ?13")
     void updateByCode(String name, String description, Long categoryId, Long providerId, Integer discount_percentage,
                       Double discount_new_price, String measures, Double m2PerBox, String priceUnit,
-                      String salesUnit, Double price, String quality, Long code);
+                      String salesUnit, Double price, String quality, Long id);
     
     @Modifying
     @Transactional

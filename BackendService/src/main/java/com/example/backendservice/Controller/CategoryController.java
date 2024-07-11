@@ -56,12 +56,12 @@ public class CategoryController {
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Category> search = categoryService.findById(id);
         if (search.isPresent()) {
-            Optional<List<Long>> listProducts = productService.getCodeByCategoryId(id);
+            Optional<List<Long>> listProducts = productService.getIdByCategory(id);
             if (listProducts.isPresent() && listProducts.get().size() > 0) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Products with Category ID " + id + " found ( Codes: " + listProducts.get() + " )");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Unable to delete Category. Products with Category ID " + id + " found ( IDs: " + listProducts.get() + " )");
             }
             categoryService.deleteById(id);
-            return ResponseEntity.ok("Product with ID " + id + " deleted.");
+            return ResponseEntity.ok("Category with ID " + id + " deleted.");
         }
         return notFound(id);
     }

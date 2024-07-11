@@ -55,10 +55,6 @@ public class Product {
     private Long providerId;
     
     @NotNull
-    @Column(name = "code", nullable = false)
-    private Long code;
-    
-    @NotNull
     @Column(name = "measures", nullable = false)
     private String measures;
     

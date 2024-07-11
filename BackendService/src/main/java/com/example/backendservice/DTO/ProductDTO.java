@@ -18,7 +18,6 @@ public class ProductDTO {
     private String description;
     private Integer discountPercentage;
     private Double discountNewPrice;
-    private Long code;
     private String measures;
     private Double m2PerBox;
     private String priceUnit;

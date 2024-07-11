@@ -35,7 +35,6 @@ public class ProductService {
         productDTO.setDescription(product.getDescription());
         productDTO.setDiscountPercentage(product.getDiscount_percentage());
         productDTO.setDiscountNewPrice(product.getDiscount_new_price());
-        productDTO.setCode(product.getCode());
         productDTO.setMeasures(product.getMeasures());
         productDTO.setM2PerBox(product.getM2PerBox());
         productDTO.setPriceUnit(product.getPriceUnit());
@@ -89,20 +88,20 @@ public class ProductService {
         return productRepository.save(product);
     }
     
-    public Optional<Product> getByCode(Long code) {
-        return productRepository.findByCode(code);
+    public Optional<Product> getById(Long id) {
+        return productRepository.findById(id);
     }
     
-    public Optional<List<Long>> getCodeByCategoryId(Long id) {
-        return productRepository.getCodeByCategoryId(id);
+    public Optional<List<Long>> getIdByCategory(Long id) {
+        return productRepository.getIdByCategory(id);
     }
     
-    public Optional<List<Long>> getCodeByProviderId(Long id) {
-        return productRepository.getCodeByProviderId(id);
+    public Optional<List<Long>> getIdByProvider(Long id) {
+        return productRepository.getIdByProvider(id);
     }
     
-    public void deleteByCode(Long code) {
-        productRepository.deleteByCode(code);
+    public void deleteByCode(Long id) {
+        productRepository.deleteById(id);
     }
     
     public void updateProduct(Product product) {
@@ -111,7 +110,7 @@ public class ProductService {
         // Deletes tags with updated product ID
         productRepository.deleteTagsById(product.getId());
         // Update the rest of the product fields
-        productRepository.updateByCode(product.getName(), product.getDescription(), product.getCategoryId(), product.getProviderId(), product.getDiscount_percentage(), product.getDiscount_new_price(), product.getMeasures(), product.getM2PerBox(), product.getPriceUnit(), product.getSalesUnit(), product.getPrice(), product.getQuality(), product.getCode());
+        productRepository.updateByCode(product.getName(), product.getDescription(), product.getCategoryId(), product.getProviderId(), product.getDiscount_percentage(), product.getDiscount_new_price(), product.getMeasures(), product.getM2PerBox(), product.getPriceUnit(), product.getSalesUnit(), product.getPrice(), product.getQuality(), product.getId());
         // Insert all new tags
         for (String tag : product.getTags()) {
             productRepository.insertTagById(tag, product.getId());
@@ -120,15 +119,14 @@ public class ProductService {
         for (String image : product.getImages()) {
             productRepository.insertImageById(image, product.getId());
         }
-        productRepository.findByCode(product.getCode());
     }
     
     public Optional<List<String>> getProductTags(Long productId) {
-        return productPaginationRepository.findById(productId).map(Product::getTags);
+        return productRepository.findById(productId).map(Product::getTags);
     }
     
     public Optional<List<String>> getProductImages(Long productId) {
-        return productPaginationRepository.findById(productId).map(Product::getImages);
+        return productRepository.findById(productId).map(Product::getImages);
     }
     
 }

@@ -28,8 +28,8 @@ public class ProductController {
     private final CategoryService categoryService;
     private final ProviderService providerService;
     
-    public ResponseEntity<?> notFound(Long code) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product with code " + code + " not found.");
+    public ResponseEntity<?> notFound(Long id) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product with ID " + id + " not found.");
     }
     
     @GetMapping("/list")
@@ -57,29 +57,29 @@ public class ProductController {
         
     }
     
-    @GetMapping("/{code}")
-    public ResponseEntity<?> getByCode(@PathVariable Long code) {
-        Optional<Product> product = productService.getByCode(code);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        Optional<Product> product = productService.getById(id);
         return product.isEmpty()
-                ? notFound(code)
+                ? notFound(id)
                 : ResponseEntity.ok(product);
     }
     
-    @DeleteMapping("/{code}")
-    public ResponseEntity<?> deleteByCode(@PathVariable Long code) {
-        Optional<Product> product = productService.getByCode(code);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
+        Optional<Product> product = productService.getById(id);
         if (product.isPresent()) {
-            productService.deleteByCode(code);
-            return ResponseEntity.ok("Product with code " + code + " deleted.");
+            productService.deleteByCode(id);
+            return ResponseEntity.ok("Product with ID " + id + " deleted.");
         }
-        return notFound(code);
+        return notFound(id);
     }
     
     @PutMapping()
     public ResponseEntity<?> updateByCode(@Valid @RequestBody Product product) {
-        Optional<Product> searchProduct = productService.getByCode(product.getCode());
+        Optional<Product> searchProduct = productService.getById(product.getId());
         if (searchProduct.isEmpty()) {
-            return notFound(product.getCode());
+            return notFound(product.getId());
         }
         Optional<Category> category = categoryService.findById(product.getCategoryId());
         Optional<Provider> provider = providerService.findById(product.getProviderId());

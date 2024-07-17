@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class CategoryController {
     }
     
     @PostMapping("/add")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> add(@Valid @RequestBody CategoryDTO categoryDTO) {
         String newName = categoryDTO.getName();
         Optional<Category> repeatedCategory = categoryService.findByName(newName);
@@ -53,6 +55,7 @@ public class CategoryController {
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Category> search = categoryService.findById(id);
         if (search.isPresent()) {

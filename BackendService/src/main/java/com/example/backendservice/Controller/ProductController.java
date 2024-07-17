@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,7 @@ public class ProductController {
     }
     
     @PostMapping("/add")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) {
     
         Optional<Category> category = categoryService.findById(product.getCategoryId());
@@ -66,6 +68,7 @@ public class ProductController {
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Product> product = productService.getById(id);
         if (product.isPresent()) {
@@ -76,6 +79,7 @@ public class ProductController {
     }
     
     @PutMapping()
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateByCode(@Valid @RequestBody Product product) {
         Optional<Product> searchProduct = productService.getById(product.getId());
         if (searchProduct.isEmpty()) {

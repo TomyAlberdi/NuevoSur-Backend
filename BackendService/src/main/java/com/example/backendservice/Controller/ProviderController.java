@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class ProviderController {
     }
     
     @PostMapping("/add")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> add(@Valid @RequestBody ProviderDTO providerDTO) {
         String newName = providerDTO.getName();
         Optional<Provider> repeatedProvider = providerService.findByName(newName);
@@ -53,6 +55,7 @@ public class ProviderController {
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Provider> search = providerService.findById(id);
         if (search.isPresent()) {

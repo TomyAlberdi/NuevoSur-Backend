@@ -1,5 +1,6 @@
 package com.example.backendservice.Service;
 
+import com.example.backendservice.DTO.ProductCardDTO;
 import com.example.backendservice.DTO.ProductDTO;
 import com.example.backendservice.Entity.Category;
 import com.example.backendservice.Entity.Product;
@@ -13,11 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -74,21 +76,45 @@ public class ProductService {
         
     }
     
-    public Page<ProductDTO> getPaginatedProducts(int page, int size) {
+    public ResponseEntity<?> searchKeys(Long categoryID, Long providerID) {
+    
+        Optional<Category> category = categoryRepository.findById(categoryID);
+        Optional<Provider> provider = providerRepository.findById(providerID);
+    
+        if (category.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with ID " + categoryID + " not found.");
+        }
+        if (provider.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Provider with ID " + providerID + " not found.");
+        }
+        
+        return ResponseEntity.status(HttpStatus.FOUND).body("");
+        
+    }
+    
+    public Page<ProductCardDTO> getPaginatedProductsCard(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productPaginationRepository.findAll(pageable);
+        Page<ProductCardDTO> productDTOPage = productPaginationRepository.getProductCards(pageable);
         
-        List<ProductDTO> productDTOS = productPage.getContent().stream().map(this::convertDTO).collect(Collectors.toList());
+        List<ProductCardDTO> productCardDTOList = productDTOPage.getContent().stream().toList();
         
-        return new PageImpl<>(productDTOS, pageable, productPage.getTotalElements());
-        
+        for (ProductCardDTO productCardDTO : productCardDTOList) {
+            Optional<List<String>> images = this.getProductImages(productCardDTO.getId());
+            images.ifPresent(strings -> productCardDTO.setImage(strings.get(0)));
+        }
+        return new PageImpl<>(productCardDTOList, pageable, productDTOPage.getTotalElements());
     }
     
     public Product add(Product product) {
         return productRepository.save(product);
     }
     
-    public Optional<Product> getById(Long id) {
+    public Optional<ProductDTO> getById(Long id) {
+        Optional<Product> product = productRepository.findById(id);
+        return product.map(this::convertDTO);
+    }
+    
+    public Optional<Product> getCompleteById(Long id) {
         return productRepository.findById(id);
     }
     

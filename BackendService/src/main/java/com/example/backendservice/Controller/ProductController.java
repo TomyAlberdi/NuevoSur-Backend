@@ -1,5 +1,6 @@
 package com.example.backendservice.Controller;
 
+import com.example.backendservice.DTO.ProductCardDTO;
 import com.example.backendservice.DTO.ProductDTO;
 import com.example.backendservice.Entity.Category;
 import com.example.backendservice.Entity.Product;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -34,43 +36,53 @@ public class ProductController {
     }
     
     @GetMapping("/list")
-    public Page<ProductDTO> list(
+    public Page<ProductCardDTO> list(
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size) {
-            return productService.getPaginatedProducts(page, size);
+            return productService.getPaginatedProductsCard(page, size);
     }
     
     @PostMapping("/add")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> add(@Valid @RequestBody Product product) {
     
-        Optional<Category> category = categoryService.findById(product.getCategoryId());
-        Optional<Provider> provider = providerService.findById(product.getProviderId());
+        ResponseEntity<?> res = productService.searchKeys(product.getCategoryId(),product.getProviderId());
         
-        if (category.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category with ID " + product.getCategoryId() + " not found.");
+        if (res.getStatusCode().equals(HttpStatus.FOUND)) {
+            productService.add(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Product Created");
+        } else {
+            return res;
         }
-        if (provider.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Provider with ID " + product.getProviderId() + " not found.");
+        
+    }
+    
+    @PostMapping("/addList")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
+    public ResponseEntity<?> addList(@Valid @RequestBody List<Product> list) {
+        for (Product product : list) {
+            ResponseEntity<?> res = productService.searchKeys(product.getCategoryId(), product.getProviderId());
+            if (res.getStatusCode().equals(HttpStatus.FOUND)) {
+                productService.add(product);
+            } else {
+                return res;
+            }
         }
-        
-        Product newProduct = productService.add(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Product Created");
-        
+        return ResponseEntity.status(HttpStatus.CREATED).body("Products Created");
     }
     
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        Optional<Product> product = productService.getById(id);
+        Optional<ProductDTO> product = productService.getById(id);
         return product.isEmpty()
                 ? notFound(id)
                 : ResponseEntity.ok(product);
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
-        Optional<Product> product = productService.getById(id);
+        Optional<ProductDTO> product = productService.getById(id);
         if (product.isPresent()) {
             productService.deleteByCode(id);
             return ResponseEntity.ok("Product with ID " + id + " deleted.");
@@ -79,9 +91,9 @@ public class ProductController {
     }
     
     @PutMapping()
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> updateByCode(@Valid @RequestBody Product product) {
-        Optional<Product> searchProduct = productService.getById(product.getId());
+        Optional<Product> searchProduct = productService.getCompleteById(product.getId());
         if (searchProduct.isEmpty()) {
             return notFound(product.getId());
         }

@@ -43,19 +43,19 @@ public class ProviderController {
     }
     
     @PostMapping("/add")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> add(@Valid @RequestBody ProviderDTO providerDTO) {
         String newName = providerDTO.getName();
         Optional<Provider> repeatedProvider = providerService.findByName(newName);
         if (repeatedProvider.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provider " + newName + " already exists.");
         }
-        Provider provider = providerService.add(providerDTO);
+        providerService.add(providerDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Provider created");
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Provider> search = providerService.findById(id);
         if (search.isPresent()) {

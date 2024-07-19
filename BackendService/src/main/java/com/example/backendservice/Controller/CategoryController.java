@@ -43,19 +43,19 @@ public class CategoryController {
     }
     
     @PostMapping("/add")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> add(@Valid @RequestBody CategoryDTO categoryDTO) {
         String newName = categoryDTO.getName();
         Optional<Category> repeatedCategory = categoryService.findByName(newName);
         if (repeatedCategory.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category " + newName + " already exists.");
         }
-        Category category = categoryService.add(categoryDTO);
+        categoryService.add(categoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Category created");
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('ROLE_admin')")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         Optional<Category> search = categoryService.findById(id);
         if (search.isPresent()) {

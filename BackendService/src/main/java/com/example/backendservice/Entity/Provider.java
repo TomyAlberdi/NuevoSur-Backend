@@ -23,4 +23,7 @@ public class Provider {
     @Column(name = "name")
     private String name;
     
+    @Column(name = "products")
+    private Integer products;
+    
 }

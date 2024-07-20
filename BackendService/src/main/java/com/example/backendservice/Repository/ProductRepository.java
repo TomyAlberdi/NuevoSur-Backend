@@ -16,8 +16,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p.id FROM Product p WHERE p.categoryId = ?1")
     Optional<List<Long>> getIdByCategory(Long id);
     
+    @Query("SELECT COUNT(p) AS amount FROM Product p WHERE p.categoryId = ?1")
+    Integer getProductAmountByCategory(Long id);
+    
     @Query("SELECT p.id FROM Product p WHERE p.providerId = ?1")
     Optional<List<Long>> getIdByProvider(Long id);
+    
+    @Query("SELECT COUNT(p) AS amount FROM Product p WHERE p.providerId = ?1")
+    Integer getProductAmountByProvider(Long id);
     
     @Modifying
     @Transactional

@@ -3,6 +3,7 @@ package com.example.backendservice.Service;
 import com.example.backendservice.DTO.CategoryDTO;
 import com.example.backendservice.Entity.Category;
 import com.example.backendservice.Repository.CategoryRepository;
+import com.example.backendservice.Repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +15,26 @@ import java.util.Optional;
 public class CategoryService {
     
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     
     public List<Category> list() {
-        return categoryRepository.findAll();
+        List<Category> list = categoryRepository.findAll();
+        for (Category category : list) {
+            category.setProducts(productRepository.getProductAmountByCategory(category.getId()));
+        }
+        return list;
     }
     
     public Optional<Category> findByName(String name) {
-        return categoryRepository.findByName(name);
+        Optional<Category> category = categoryRepository.findByName(name);
+        category.ifPresent(value -> value.setProducts(productRepository.getProductAmountByCategory(value.getId())));
+        return category;
     }
     
     public Optional<Category> findById(Long id) {
-        return categoryRepository.findById(id);
+        Optional<Category> category = categoryRepository.findById(id);
+        category.ifPresent(value -> value.setProducts(productRepository.getProductAmountByCategory(id)));
+        return category;
     }
     
     public Category add(CategoryDTO categoryDTO) {

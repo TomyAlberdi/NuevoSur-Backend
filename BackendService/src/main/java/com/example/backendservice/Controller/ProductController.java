@@ -111,4 +111,14 @@ public class ProductController {
         
     }
     
+    @GetMapping("/measures")
+    public ResponseEntity<?> getMeasures() {
+        return ResponseEntity.ok(productService.getMeasures());
+    }
+    
+    @GetMapping("/prices")
+    public ResponseEntity<?> getPrices() {
+        return ResponseEntity.ok(productService.getPrices());
+    }
+    
 }

@@ -1,5 +1,7 @@
 package com.example.backendservice.Service;
 
+import com.example.backendservice.DTO.MeasureDTO;
+import com.example.backendservice.DTO.PricesDTO;
 import com.example.backendservice.DTO.ProductCardDTO;
 import com.example.backendservice.DTO.ProductDTO;
 import com.example.backendservice.Entity.Category;
@@ -153,6 +155,14 @@ public class ProductService {
     
     public Optional<List<String>> getProductImages(Long productId) {
         return productRepository.findById(productId).map(Product::getImages);
+    }
+    
+    public List<MeasureDTO> getMeasures() {
+        return productRepository.getMeasures();
+    }
+    
+    public PricesDTO getPrices() {
+        return productRepository.getPrices();
     }
     
 }

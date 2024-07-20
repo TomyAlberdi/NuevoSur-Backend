@@ -1,5 +1,7 @@
 package com.example.backendservice.Repository;
 
+import com.example.backendservice.DTO.MeasureDTO;
+import com.example.backendservice.DTO.PricesDTO;
 import com.example.backendservice.Entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,6 +26,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     @Query("SELECT COUNT(p) AS amount FROM Product p WHERE p.providerId = ?1")
     Integer getProductAmountByProvider(Long id);
+    
+    @Query("SELECT new com.example.backendservice.DTO.MeasureDTO(p.measures, COUNT(p)) FROM Product p GROUP BY p.measures ORDER BY COUNT(p) DESC")
+    List<MeasureDTO> getMeasures();
+    
+    @Query("SELECT new com.example.backendservice.DTO.PricesDTO(MIN(p.price), MAX(p.price)) FROM Product p")
+    PricesDTO getPrices();
     
     @Modifying
     @Transactional

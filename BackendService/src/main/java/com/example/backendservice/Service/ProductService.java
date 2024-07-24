@@ -1,12 +1,10 @@
 package com.example.backendservice.Service;
 
-import com.example.backendservice.DTO.MeasureDTO;
-import com.example.backendservice.DTO.PricesDTO;
-import com.example.backendservice.DTO.ProductCardDTO;
-import com.example.backendservice.DTO.ProductDTO;
+import com.example.backendservice.DTO.*;
 import com.example.backendservice.Entity.Category;
 import com.example.backendservice.Entity.Product;
 import com.example.backendservice.Entity.Provider;
+import com.example.backendservice.Hooks.ProductSpecifications;
 import com.example.backendservice.Repository.CategoryRepository;
 import com.example.backendservice.Repository.ProductPaginationRepository;
 import com.example.backendservice.Repository.ProductRepository;
@@ -16,12 +14,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -62,9 +62,9 @@ public class ProductService {
         
         Optional<List<String>> images = this.getProductImages(product.getId());
         if (images.isPresent()) {
-            productDTO.setImages(images.get());
+            productDTO.setImage(images.get());
         } else {
-            productDTO.setImages(null);
+            productDTO.setImage(null);
         }
     
         Optional<List<String>> tags = this.getProductTags(product.getId());
@@ -94,7 +94,7 @@ public class ProductService {
         
     }
     
-    public Page<ProductCardDTO> getPaginatedProductsCard(int page, int size) {
+    public Page<ProductCardDTO> getPaginatedProductsCard(int page, int size)    {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductCardDTO> productDTOPage = productPaginationRepository.getProductCards(pageable);
         
@@ -105,6 +105,25 @@ public class ProductService {
             images.ifPresent(strings -> productCardDTO.setImage(strings.get(0)));
         }
         return new PageImpl<>(productCardDTOList, pageable, productDTOPage.getTotalElements());
+    }
+    public Page<ProductCardDTO> getFilteredProductCards(FilterDTO filterDTO, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+    
+        Specification<Product> spec = Specification.where(ProductSpecifications.hasCategory(filterDTO.getCategoryId()))
+                .and(ProductSpecifications.hasProvider(filterDTO.getProviderId()))
+                .and(ProductSpecifications.hasMeasure(filterDTO.getMeasure()))
+                .and(ProductSpecifications.priceBetween(filterDTO.getMinPrice(), filterDTO.getMaxPrice()))
+                .and(ProductSpecifications.hasDiscount(filterDTO.getDiscount()));
+        
+        return productPaginationRepository.findAll(spec, pageable).map(product ->
+                new ProductCardDTO(product.getId(), product.getName(), product.getPrice(), product.getSalesUnit(), product.getDiscount_percentage(), product.getDiscount_new_price(), product.getImages().get(0))
+        );
+    }
+    
+    public List<ProductDTO> searchProductsByKeyword(String keyword) {
+        List<Product> products = productPaginationRepository.searchProductsByKeyword(keyword);
+        return products.stream().map(this::convertDTO
+        ).collect(Collectors.toList());
     }
     
     public Product add(Product product) {
@@ -164,5 +183,7 @@ public class ProductService {
     public PricesDTO getPrices() {
         return productRepository.getPrices();
     }
+    
+
     
 }

@@ -29,5 +29,5 @@ public class ProductDTO {
     private String provider;
     
     private List<String> tags;
-    private List<String> images;
+    private List<String> image;
 }

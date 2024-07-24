@@ -1,5 +1,6 @@
 package com.example.backendservice.Controller;
 
+import com.example.backendservice.DTO.FilterDTO;
 import com.example.backendservice.DTO.ProductCardDTO;
 import com.example.backendservice.DTO.ProductDTO;
 import com.example.backendservice.Entity.Category;
@@ -38,8 +39,24 @@ public class ProductController {
     @GetMapping("/list")
     public Page<ProductCardDTO> list(
         @RequestParam(value = "page", defaultValue = "0") int page,
-        @RequestParam(value = "size", defaultValue = "10") int size) {
+        @RequestParam(value = "size", defaultValue = "9") int size) {
             return productService.getPaginatedProductsCard(page, size);
+    }
+    
+    @GetMapping("/filterList")
+    public Page<ProductCardDTO> getProductCards(FilterDTO filterDTO,
+                                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                                @RequestParam(value = "size", defaultValue = "9") int size) {
+        return productService.getFilteredProductCards(filterDTO, page, size);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>>  searchProductsByKeyword(@RequestParam String keyword) {
+        if (keyword.length() < 4) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        List<ProductDTO> products = productService.searchProductsByKeyword(keyword);
+        return ResponseEntity.ok(products);
     }
     
     @PostMapping("/add")

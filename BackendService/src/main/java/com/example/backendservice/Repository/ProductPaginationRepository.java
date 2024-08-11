@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface ProductPaginationRepository extends PagingAndSortingRepository<Product, Long>, JpaSpecificationExecutor<Product> {
     
-    @Query("SELECT new com.example.backendservice.DTO.ProductCardDTO(p.id, p.name, p.price, p.salesUnit, p.discount_percentage, p.discount_new_price, '') FROM Product p")
+    @Query("SELECT new com.example.backendservice.DTO.ProductCardDTO(p.id, p.name, p.price, p.salesUnit, p.priceUnit, p.discount_percentage, p.discount_new_price, '') FROM Product p")
     Page<ProductCardDTO> getProductCards(Pageable pageable);
     
     @Query("SELECT p FROM Product p " +

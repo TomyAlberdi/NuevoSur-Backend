@@ -15,6 +15,7 @@ public class ProductCardDTO {
     private String name;
     private Double price;
     private String salesUnit;
+    private String priceUnit;
     private Integer discountPercentage;
     private Double discountNewPrice;
     private String image;

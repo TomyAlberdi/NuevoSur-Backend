@@ -116,7 +116,7 @@ public class ProductService {
                 .and(ProductSpecifications.hasDiscount(filterDTO.getDiscount()));
         
         return productPaginationRepository.findAll(spec, pageable).map(product ->
-                new ProductCardDTO(product.getId(), product.getName(), product.getPrice(), product.getSalesUnit(), product.getDiscount_percentage(), product.getDiscount_new_price(), product.getImages().get(0))
+                new ProductCardDTO(product.getId(), product.getName(), product.getPrice(), product.getSalesUnit(), product.getPriceUnit(), product.getDiscount_percentage(), product.getDiscount_new_price(), product.getImages().get(0))
         );
     }
     
